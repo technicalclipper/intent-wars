@@ -1,10 +1,17 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
-import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+import { Analytics } from '@vercel/analytics/next'
+import { Geist, Geist_Mono, Press_Start_2P } from "next/font/google";
+import "./globals.css";
+
+
+const pressStart2P = Press_Start_2P({
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-press-start-2p",
+});
+
 
 export const metadata: Metadata = {
   title: 'v0 App',
@@ -19,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans antialiased`}>
+       <body className={`${pressStart2P.variable} antialiased`}>
         {children}
         <Analytics />
       </body>

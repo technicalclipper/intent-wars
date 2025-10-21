@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+
+
+
+
+
 :root {
   /* Updated color palette to match magical DeFi realm specification */
   --background: #2a003e;
@@ -88,6 +93,7 @@
 @theme inline {
   --font-sans: "Geist", "Geist Fallback";
   --font-mono: "Geist Mono", "Geist Mono Fallback";
+  --font-press-start-2p: var(--font-press-start-2p);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -131,7 +137,13 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-press-start-2p;
+  }
+}
+
+@layer utilities {
+  .font-press-start-2p {
+    font-family: var(--font-press-start-2p), monospace;
   }
 }
 
