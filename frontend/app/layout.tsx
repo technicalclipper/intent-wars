@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { Providers } from './providers';
+
 
 import { Analytics } from '@vercel/analytics/next'
 import { Geist, Geist_Mono, Press_Start_2P } from "next/font/google";
@@ -27,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
        <body className={`${pressStart2P.variable} antialiased`}>
-        {children}
+        <Providers>{children}</Providers>
         <Analytics />
       </body>
     </html>

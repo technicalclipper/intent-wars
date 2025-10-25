@@ -7,6 +7,7 @@ interface SpellInput {
   label: string
   type: string
   placeholder: string
+  options?: string[]
 }
 
 interface SpellCardProps {
@@ -54,7 +55,17 @@ export default function SpellCard({ id, name, icon, instanceId, inputs, onRemove
           className="w-full p-5 flex items-center justify-between hover:bg-accent/5 transition-colors"
         >
           <div className="flex items-center gap-4">
-            <div className="text-4xl filter drop-shadow-lg float-drift">{icon}</div>
+            <div className="text-4xl filter drop-shadow-lg float-drift">
+              {id === 'bridge' ? (
+                <img 
+                  src="/bridge.png" 
+                  alt="Bridge" 
+                  className="w-12 h-12 object-contain"
+                />
+              ) : (
+                icon
+              )}
+            </div>
             <div className="text-left">
               <p className="font-bold text-lg text-foreground">{name}</p>
               <p className="text-xs text-muted-foreground uppercase tracking-wider">Configure spell</p>
@@ -83,13 +94,30 @@ export default function SpellCard({ id, name, icon, instanceId, inputs, onRemove
                 <label className="block text-xs font-bold text-accent mb-2 uppercase tracking-wider rune-pulse">
                   {input.label}
                 </label>
-                <input
-                  type={input.type}
-                  placeholder={input.placeholder}
-                  value={config[input.id] || ""}
-                  onChange={(e) => handleInputChange(input.id, e.target.value)}
-                  className="w-full px-4 py-2.5 bg-input border-2 border-primary/40 rounded-lg text-foreground text-sm placeholder-muted-foreground focus:outline-none focus:border-accent/80 focus:ring-2 focus:ring-accent/30 transition-all font-semibold arcane-glow"
-                />
+                {input.type === 'select' ? (
+                  <select
+                    value={config[input.id] || ""}
+                    onChange={(e) => handleInputChange(input.id, e.target.value)}
+                    className="w-full px-4 py-2.5 bg-input border-2 border-primary/40 rounded-lg text-foreground text-sm focus:outline-none focus:border-accent/80 focus:ring-2 focus:ring-accent/30 transition-all font-semibold arcane-glow"
+                  >
+                    <option value="" disabled>
+                      {input.placeholder}
+                    </option>
+                    {input.options?.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type={input.type}
+                    placeholder={input.placeholder}
+                    value={config[input.id] || ""}
+                    onChange={(e) => handleInputChange(input.id, e.target.value)}
+                    className="w-full px-4 py-2.5 bg-input border-2 border-primary/40 rounded-lg text-foreground text-sm placeholder-muted-foreground focus:outline-none focus:border-accent/80 focus:ring-2 focus:ring-accent/30 transition-all font-semibold arcane-glow"
+                  />
+                )}
               </div>
             ))}
           </div>

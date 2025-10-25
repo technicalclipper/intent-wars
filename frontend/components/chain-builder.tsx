@@ -4,12 +4,13 @@ import type React from "react"
 import { useState } from "react"
 import SpellCard from "./spell-card"
 import CauldronVisualization from "./cauldron-visualization"
+import { BridgeSpell } from "./bridge-spell"
 
 interface Spell {
   id: string
   name: string
   icon: string
-  inputs: Array<{ id: string; label: string; type: string; placeholder: string }>
+  inputs: Array<{ id: string; label: string; type: string; placeholder: string; options?: string[] }>
 }
 
 interface ChainSpell {
@@ -17,7 +18,7 @@ interface ChainSpell {
   name: string
   icon: string
   instanceId: number
-  inputs: Array<{ id: string; label: string; type: string; placeholder: string }>
+  inputs: Array<{ id: string; label: string; type: string; placeholder: string; options?: string[] }>
   config: Record<string, string>
 }
 
@@ -42,9 +43,9 @@ const SPELL_MAP: Record<string, Spell> = {
     name: "Bridge Scroll",
     icon: "🪶",
     inputs: [
-      { id: "fromChain", label: "From Chain", type: "text", placeholder: "Ethereum" },
-      { id: "toChain", label: "To Chain", type: "text", placeholder: "Arbitrum" },
-      { id: "amount", label: "Amount", type: "number", placeholder: "1.0" },
+      { id: "chainId", label: "To Chain", type: "select", options: ["Sepolia (11155111)", "Arbitrum Sepolia (421614)", "Polygon Amoy (80002)", "Optimism Sepolia (11155420)", "Base Sepolia (84532)", "Monad Testnet (1014)"], placeholder: "Arbitrum Sepolia (421614)" },
+      { id: "token", label: "Token", type: "select", options: ["ETH", "USDC", "MATIC", "MON"], placeholder: "USDC" },
+      { id: "amount", label: "Amount", type: "number", placeholder: "1" },
     ],
   },
   stake: {
@@ -158,15 +159,31 @@ export default function ChainBuilder({ spellChain, setSpellChain }: ChainBuilder
             <div className="space-y-4 overflow-y-auto">
               {spellChain.map((spell, index) => (
                 <div key={spell.instanceId}>
-                  <SpellCard
-                    id={spell.id}
-                    name={spell.name}
-                    icon={spell.icon}
-                    instanceId={spell.instanceId}
-                    inputs={spell.inputs}
-                    onRemove={removeSpell}
-                    onUpdate={updateSpellConfig}
-                  />
+                  {spell.id === 'bridge' ? (
+                    <BridgeSpell
+                      config={{
+                        chainId: spell.config.chainId || 'Arbitrum Sepolia (421614)',
+                        token: spell.config.token || 'USDC',
+                        amount: spell.config.amount || '1',
+                      }}
+                      onExecute={() => {
+                        console.log('Bridge transaction started!', spell.config);
+                        // Don't remove immediately - let the bridge transaction complete
+                        // The spell will be removed when the transaction is confirmed
+                      }}
+                      onCancel={() => removeSpell(spell.instanceId)}
+                    />
+                  ) : (
+                    <SpellCard
+                      id={spell.id}
+                      name={spell.name}
+                      icon={spell.icon}
+                      instanceId={spell.instanceId}
+                      inputs={spell.inputs}
+                      onRemove={removeSpell}
+                      onUpdate={updateSpellConfig}
+                    />
+                  )}
 
                   {index < spellChain.length - 1 && (
                     <div className="flex justify-center py-4">
