@@ -3,6 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import { BridgeSpell } from './bridge-spell'
+import { LendSpell } from './lend-spell'
 import { SpellConfigDialog } from './spell-config-dialog'
 
 interface SpellInput {
@@ -43,9 +44,10 @@ const SPELLS = [
     icon: "🏦",
     description: "Provide liquidity",
     inputs: [
-      { id: "token", label: "Token", type: "text", placeholder: "USDC" },
-      { id: "amount", label: "Amount", type: "number", placeholder: "1000" },
-      { id: "protocol", label: "Protocol", type: "text", placeholder: "Aave" },
+      { id: "chainId", label: "Chain", type: "select", options: ["Sepolia (11155111)", "Arbitrum Sepolia (421614)", "Polygon Amoy (80002)", "Optimism Sepolia (11155420)", "Base Sepolia (84532)", "Monad Testnet (1014)"], placeholder: "Sepolia (11155111)" },
+      { id: "token", label: "Token", type: "select", options: ["USDC", "ETH", "MATIC"], placeholder: "USDC" },
+      { id: "amount", label: "Amount", type: "number", placeholder: "100" },
+      { id: "protocol", label: "Protocol", type: "select", options: ["Yearn", "Aave", "Compound"], placeholder: "Yearn" },
     ],
   },
   {
@@ -173,6 +175,16 @@ export default function SpellLibrary() {
       {activeSpell && activeSpell.type === 'bridge' && (
         <div className="mt-6">
           <BridgeSpell
+            config={activeSpell.config}
+            onExecute={handleSpellExecute}
+            onCancel={handleSpellCancel}
+          />
+        </div>
+      )}
+
+      {activeSpell && activeSpell.type === 'lend' && (
+        <div className="mt-6">
+          <LendSpell
             config={activeSpell.config}
             onExecute={handleSpellExecute}
             onCancel={handleSpellCancel}

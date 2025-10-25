@@ -6,6 +6,7 @@ import SpellCard from "./spell-card"
 import CauldronVisualization from "./cauldron-visualization"
 import { BridgeSpell } from "./bridge-spell"
 import { SwapSpell } from "./swap-spell"
+import { LendSpell } from "./lend-spell"
 
 interface Spell {
   id: string
@@ -65,9 +66,10 @@ const SPELL_MAP: Record<string, Spell> = {
     name: "Lend Rune",
     icon: "🏦",
     inputs: [
-      { id: "token", label: "Token", type: "text", placeholder: "USDC" },
-      { id: "amount", label: "Amount", type: "number", placeholder: "1000" },
-      { id: "protocol", label: "Protocol", type: "text", placeholder: "Aave" },
+      { id: "chainId", label: "Chain", type: "select", options: ["Sepolia (11155111)", "Arbitrum Sepolia (421614)", "Polygon Amoy (80002)", "Optimism Sepolia (11155420)", "Base Sepolia (84532)", "Monad Testnet (1014)"], placeholder: "Sepolia (11155111)" },
+      { id: "token", label: "Token", type: "select", options: ["USDC", "ETH", "MATIC"], placeholder: "USDC" },
+      { id: "amount", label: "Amount", type: "number", placeholder: "100" },
+      { id: "protocol", label: "Protocol", type: "select", options: ["Yearn", "Aave", "Compound"], placeholder: "Yearn" },
     ],
   },
   farm: {
@@ -186,6 +188,21 @@ export default function ChainBuilder({ spellChain, setSpellChain }: ChainBuilder
                       onExecute={() => {
                         console.log('Swap transaction started!', spell.config);
                         // Don't remove immediately - let the swap transaction complete
+                        // The spell will be removed when the transaction is confirmed
+                      }}
+                      onCancel={() => removeSpell(spell.instanceId)}
+                    />
+                  ) : spell.id === 'lend' ? (
+                    <LendSpell
+                      config={{
+                        chainId: spell.config.chainId || 'Sepolia (11155111)',
+                        token: spell.config.token || 'USDC',
+                        amount: spell.config.amount || '100',
+                        protocol: spell.config.protocol || 'Yearn',
+                      }}
+                      onExecute={() => {
+                        console.log('Lend transaction started!', spell.config);
+                        // Don't remove immediately - let the lend transaction complete
                         // The spell will be removed when the transaction is confirmed
                       }}
                       onCancel={() => removeSpell(spell.instanceId)}
