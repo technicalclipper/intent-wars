@@ -243,27 +243,13 @@ export function BridgeSpell({ config, onExecute, onCancel }: BridgeSpellProps) {
           Simulate
         </button>
         
-        <BridgeButton
-          prefill={{
-            chainId: parseInt(bridgeConfig.chainId),
-            token: bridgeConfig.token,
-            amount: bridgeConfig.amount,
-          }}
+        <button
+          onClick={handleSimulation}
+          disabled={!simulationResult}
+          className="flex-1 px-4 py-2 bg-accent text-accent-foreground rounded-lg text-sm font-bold hover:bg-accent/80 disabled:opacity-50 transition-colors"
         >
-          {({ onClick, isLoading }) => (
-            <button
-              onClick={() => {
-                onClick();
-                // Don't call onExecute immediately - let the bridge transaction handle completion
-                console.log('Bridge transaction initiated');
-              }}
-              disabled={isLoading || !simulationResult}
-              className="flex-1 px-4 py-2 bg-accent text-accent-foreground rounded-lg text-sm font-bold hover:bg-accent/80 disabled:opacity-50 transition-colors"
-            >
-              {isLoading ? 'Bridging...' : 'Brew Potion'}
-            </button>
-          )}
-        </BridgeButton>
+          Simulate Only
+        </button>
         
         <button
           onClick={onCancel}
