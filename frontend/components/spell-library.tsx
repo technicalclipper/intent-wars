@@ -31,9 +31,10 @@ const SPELLS = [
     icon: "💧",
     description: "Exchange tokens",
     inputs: [
-      { id: "from", label: "From Token", type: "text", placeholder: "ETH" },
-      { id: "to", label: "To Token", type: "text", placeholder: "USDC" },
-      { id: "amount", label: "Amount", type: "number", placeholder: "1.0" },
+      { id: "chainId", label: "Chain", type: "select", options: ["Sepolia (11155111)", "Arbitrum Sepolia (421614)", "Polygon Amoy (80002)", "Optimism Sepolia (11155420)", "Base Sepolia (84532)", "Monad Testnet (1014)"], placeholder: "Sepolia (11155111)" },
+      { id: "fromToken", label: "From Token", type: "select", options: ["ETH", "USDC"], placeholder: "ETH" },
+      { id: "toToken", label: "To Token", type: "select", options: ["ETH", "USDC"], placeholder: "USDC" },
+      { id: "amount", label: "Amount", type: "number", placeholder: "1" },
     ],
   },
   {

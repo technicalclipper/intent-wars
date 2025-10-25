@@ -5,6 +5,7 @@ import { useState } from "react"
 import SpellCard from "./spell-card"
 import CauldronVisualization from "./cauldron-visualization"
 import { BridgeSpell } from "./bridge-spell"
+import { SwapSpell } from "./swap-spell"
 
 interface Spell {
   id: string
@@ -33,9 +34,10 @@ const SPELL_MAP: Record<string, Spell> = {
     name: "Swap Crystal",
     icon: "💧",
     inputs: [
-      { id: "from", label: "From Token", type: "text", placeholder: "ETH" },
-      { id: "to", label: "To Token", type: "text", placeholder: "USDC" },
-      { id: "amount", label: "Amount", type: "number", placeholder: "1.0" },
+      { id: "chainId", label: "Chain", type: "select", options: ["11155111", "421614", "80002", "11155420", "84532", "1014"], placeholder: "11155111" },
+      { id: "fromToken", label: "From Token", type: "select", options: ["ETH", "USDC"], placeholder: "ETH" },
+      { id: "toToken", label: "To Token", type: "select", options: ["ETH", "USDC"], placeholder: "USDC" },
+      { id: "amount", label: "Amount", type: "number", placeholder: "1" },
     ],
   },
   bridge: {
@@ -169,6 +171,21 @@ export default function ChainBuilder({ spellChain, setSpellChain }: ChainBuilder
                       onExecute={() => {
                         console.log('Bridge transaction started!', spell.config);
                         // Don't remove immediately - let the bridge transaction complete
+                        // The spell will be removed when the transaction is confirmed
+                      }}
+                      onCancel={() => removeSpell(spell.instanceId)}
+                    />
+                  ) : spell.id === 'swap' ? (
+                    <SwapSpell
+                      config={{
+                        chainId: spell.config.chainId || '11155111',
+                        fromToken: spell.config.fromToken || 'ETH',
+                        toToken: spell.config.toToken || 'USDC',
+                        amount: spell.config.amount || '1',
+                      }}
+                      onExecute={() => {
+                        console.log('Swap transaction started!', spell.config);
+                        // Don't remove immediately - let the swap transaction complete
                         // The spell will be removed when the transaction is confirmed
                       }}
                       onCancel={() => removeSpell(spell.instanceId)}
