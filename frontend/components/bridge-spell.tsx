@@ -31,6 +31,7 @@ export function BridgeSpell({ config, onExecute, onCancel }: BridgeSpellProps) {
   const [isExecuting, setIsExecuting] = useState(false);
   const [simulationResult, setSimulationResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
   
   // Extract chain ID from readable format (e.g., "Arbitrum Sepolia (421614)" -> "421614")
   const extractChainId = (chainString: string) => {
@@ -100,17 +101,40 @@ export function BridgeSpell({ config, onExecute, onCancel }: BridgeSpellProps) {
   }
 
   return (
-    <div className="p-6 bg-card border border-primary/40 rounded-xl">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="text-3xl">🌉</div>
-        <div>
-          <h3 className="text-lg font-bold text-foreground">Bridge Scroll</h3>
-          <p className="text-sm text-muted-foreground">Cross-chain transfer</p>
+    <div className="bg-card border border-primary/40 rounded-xl overflow-hidden">
+      {/* Header - Always Visible */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full p-6 flex items-center justify-between hover:bg-primary/5 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <div className="text-3xl">🌉</div>
+          <div className="text-left">
+            <h3 className="text-lg font-bold text-foreground">Bridge Scroll</h3>
+            <p className="text-sm text-muted-foreground">Cross-chain transfer</p>
+          </div>
         </div>
-      </div>
+        <div className="flex items-center gap-3">
+          <span className="text-accent text-xl transition-transform duration-300 rune-pulse">
+            {isExpanded ? "▼" : "▶"}
+          </span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onCancel();
+            }}
+            className="opacity-0 group-hover:opacity-100 px-3 py-1.5 text-xs bg-destructive/30 text-destructive rounded-lg hover:bg-destructive/50 transition-all font-bold uppercase tracking-wider"
+          >
+            Remove
+          </button>
+        </div>
+      </button>
 
-      {/* Configuration Controls */}
-      <div className="space-y-4 mb-6">
+      {/* Expandable Content */}
+      {isExpanded && (
+        <div className="border-t border-primary/30 p-6 bg-gradient-to-b from-primary/20 to-secondary/10">
+          {/* Configuration Controls */}
+          <div className="space-y-4 mb-6">
         {/* To Chain */}
         <div>
           <label className="block text-sm font-bold text-accent mb-2">To Chain</label>
@@ -163,12 +187,40 @@ export function BridgeSpell({ config, onExecute, onCancel }: BridgeSpellProps) {
               <span className="text-accent font-medium">Success</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Gas Estimate:</span>
-              <span>{simulationResult.gasEstimate || 'N/A'}</span>
+              <span className="text-muted-foreground">Token:</span>
+              <span className="font-medium">{simulationResult.token?.symbol || bridgeConfig.token}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Estimated Time:</span>
-              <span>{simulationResult.estimatedTime || 'N/A'}</span>
+              <span className="text-muted-foreground">Amount:</span>
+              <span className="font-medium">{bridgeConfig.amount} {simulationResult.token?.symbol || bridgeConfig.token}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">From Chain:</span>
+              <span className="font-medium">{simulationResult.intent?.sources?.[0]?.chainName || 'Current Chain'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">To Chain:</span>
+              <span className="font-medium">{simulationResult.intent?.destination?.chainName || CHAIN_NAMES[bridgeConfig.chainId]}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Total Fees:</span>
+              <span className="font-medium text-accent">{simulationResult.intent?.fees?.total} ETH</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Protocol Fee:</span>
+              <span className="font-medium">{simulationResult.intent?.fees?.protocol} ETH</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Solver Fee:</span>
+              <span className="font-medium">{simulationResult.intent?.fees?.solver} ETH</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Gas Fee:</span>
+              <span className="font-medium">{simulationResult.intent?.fees?.caGas} ETH</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Sources Total:</span>
+              <span className="font-medium text-accent">{simulationResult.intent?.sourcesTotal} {simulationResult.token?.symbol || bridgeConfig.token}</span>
             </div>
           </div>
         </div>
@@ -220,6 +272,8 @@ export function BridgeSpell({ config, onExecute, onCancel }: BridgeSpellProps) {
           Cancel
         </button>
       </div>
+        </div>
+      )}
     </div>
   );
 }
