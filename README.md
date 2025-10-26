@@ -256,7 +256,9 @@ await openTxToast(chainId, txHash)
 - **Ethereum Sepolia** (Chain ID: 11155111)
 - **Arbitrum Sepolia** (Chain ID: 421614)  
 - **Optimism Sepolia** (Chain ID: 11155420)
-- **Polygon Mumbai** (Chain ID: 80001)
+- **Base Sepolia** (Chain ID: 84532)
+- **Polygon Amoy** (Chain ID: 80002)
+- **Monad Testnet** (Chain ID: 41457)
 
 ## 🎨 Customization
 
