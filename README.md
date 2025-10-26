@@ -131,7 +131,14 @@ frontend/
 
 #### Avail Nexus Core
 ```typescript
-import { NexusProvider } from '@avail-project/nexus-core'
+import type {
+  ExecuteParams,
+  ExecuteResult,
+  ExecuteSimulation,
+  BridgeAndExecuteParams,
+  BridgeAndExecuteResult,
+  BridgeAndExecuteSimulationResult,
+} from '@avail-project/nexus-core';
 
 // Cross-chain bridging
 const bridgeResult = await sdk.bridge({
@@ -140,8 +147,100 @@ const bridgeResult = await sdk.bridge({
   chainId: 421614
 })
 
-// Intent simulation
-const simulation = await sdk.simulateExecute(executeParams)
+// Execute contract functions with dynamic parameter builder - Compound V3 Supply
+const result: ExecuteResult = await sdk.execute({
+  toChainId: 1,
+  contractAddress: '0xc3d688B66703497DAA19211EEdff47f25384cdc3', // Compound V3 USDC Market
+  contractAbi: [
+    {
+      inputs: [
+        { internalType: 'address', name: 'asset', type: 'address' },
+        { internalType: 'uint256', name: 'amount', type: 'uint256' },
+      ],
+      name: 'supply',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function',
+    },
+  ],
+  functionName: 'supply',
+  buildFunctionParams: (
+    token: SUPPORTED_TOKENS,
+    amount: string,
+    chainId: SUPPORTED_CHAINS_IDS,
+    userAddress: `0x${string}`,
+  ) => {
+    const decimals = TOKEN_METADATA[token].decimals;
+    const amountWei = parseUnits(amount, decimals);
+    const tokenAddress = TOKEN_CONTRACT_ADDRESSES[token][chainId];
+    return {
+      functionParams: [tokenAddress, amountWei],
+    };
+  },
+  waitForReceipt: true,
+  requiredConfirmations: 3,
+  tokenApproval: {
+    token: 'USDC',
+    amount: '1000000', // Amount in token units
+  },
+} as ExecuteParams);
+
+// Simulate execute to preview costs and check for approval requirements
+const simulation: ExecuteSimulation = await sdk.simulateExecute(executeParams);
+if (!simulation.success) {
+  console.log('Simulation failed:', simulation.error);
+  // Error might indicate missing token approval
+}
+
+// Bridge tokens and execute contract function - Yearn Vault Deposit
+const bridgeAndExecuteResult: BridgeAndExecuteResult = await sdk.bridgeAndExecute({
+  token: 'USDC',
+  amount: '100000000', // 100 USDC (6 decimals)
+  toChainId: 1, // Ethereum
+  sourceChains: [8453], // Only use USDC from `Base` as source for bridge
+  execute: {
+    contractAddress: '0xa354F35829Ae975e850e23e9615b11Da1B3dC4DE', // Yearn USDC Vault
+    contractAbi: [
+      {
+        inputs: [
+          { internalType: 'uint256', name: 'assets', type: 'uint256' },
+          { internalType: 'address', name: 'receiver', type: 'address' },
+        ],
+        name: 'deposit',
+        outputs: [{ internalType: 'uint256', name: 'shares', type: 'uint256' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+    ],
+    functionName: 'deposit',
+    buildFunctionParams: (
+      token: SUPPORTED_TOKENS,
+      amount: string,
+      chainId: SUPPORTED_CHAINS_IDS,
+      userAddress: `0x${string}`,
+    ) => {
+      const decimals = TOKEN_METADATA[token].decimals;
+      const amountWei = parseUnits(amount, decimals);
+      return {
+        functionParams: [amountWei, userAddress],
+      };
+    },
+    tokenApproval: {
+      token: 'USDC',
+      amount: '100000000',
+    },
+  },
+  waitForReceipt: true,
+} as BridgeAndExecuteParams);
+
+// Comprehensive simulation with detailed step analysis and approval handling
+const simulation: BridgeAndExecuteSimulationResult = await sdk.simulateBridgeAndExecute(params);
+
+// The simulation provides detailed step analysis:
+console.log('Steps:', simulation.steps);
+console.log('Total estimated cost:', simulation.totalEstimatedCost);
+console.log('Approval required:', simulation.metadata?.approvalRequired);
+console.log('Bridge receive amount:', simulation.metadata?.bridgeReceiveAmount);
 ```
 
 #### Blockscout Integration
