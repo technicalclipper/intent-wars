@@ -10,13 +10,24 @@ import ResultsPanel from "@/components/results-panel"
 import Leaderboard from "@/components/leaderboard"
 import GameStats from "@/components/game-stats"
 import { useAccount } from "wagmi"
+import { useTransactionPopup } from '@blockscout/app-sdk'
 
 export default function PvPGamePage() {
   const params = useParams()
   const searchParams = useSearchParams()
   const { address } = useAccount()
+  const { openPopup } = useTransactionPopup()
   const roomId = params.roomId as string
   const isWaiting = searchParams.get('waiting') === 'true'
+  
+  const showTransactionHistory = () => {
+    if (address) {
+      openPopup({
+        chainId: "11155111", // Ethereum Sepolia
+        address: address
+      })
+    }
+  }
   
   const [activeTab, setActiveTab] = useState<"builder" | "leaderboard">("builder")
   const [spellChain, setSpellChain] = useState<any[]>([])
@@ -231,6 +242,18 @@ export default function PvPGamePage() {
         )}
 
         <main className="flex-1 overflow-hidden">
+          {/* Floating Transaction History Button */}
+          {address && (
+            <div className="fixed top-20 right-4 z-40">
+              <button 
+                onClick={showTransactionHistory}
+                className="px-4 py-2 rounded-lg bg-gradient-to-r from-secondary to-accent text-secondary-foreground hover:shadow-lg hover:shadow-secondary/50 transition-all duration-300 font-bold uppercase text-xs tracking-wider glow-effect"
+              >
+                📊 Transaction History
+              </button>
+            </div>
+          )}
+          
           {activeTab === "builder" ? (
             <div className="flex h-full gap-4 p-4">
               <SpellLibrary />

@@ -45,7 +45,7 @@ export default function ResultsPanel({ spellChain }: ResultsPanelProps) {
         {spellChain.length === 0 ? (
           <div className="flex items-center justify-center h-full text-center">
             <div>
-              <p className="text-5xl mb-3 float-drift">🧴</p>
+              
               <p className="text-foreground font-bold">Build a strategy to see results</p>
               <p className="text-xs text-muted-foreground uppercase tracking-wider mt-2">Brew your first potion</p>
             </div>

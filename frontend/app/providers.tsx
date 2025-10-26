@@ -5,6 +5,7 @@ import { mainnet,sepolia, base, arbitrum, arbitrumSepolia, optimism } from 'wagm
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ConnectKitProvider, getDefaultConfig } from 'connectkit';
 import { NexusProvider } from '@avail-project/nexus-widgets';
+import { NotificationProvider, TransactionPopupProvider } from '@blockscout/app-sdk';
 
 const config = createConfig(
   getDefaultConfig({
@@ -35,7 +36,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
               debug: true, 
             }}
           >
-            {children}
+            <NotificationProvider>
+              <TransactionPopupProvider>
+                {children}
+              </TransactionPopupProvider>
+            </NotificationProvider>
           </NexusProvider>
         </ConnectKitProvider>
       </QueryClientProvider>

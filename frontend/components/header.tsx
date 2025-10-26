@@ -3,9 +3,20 @@
 import { WalletBridge } from './wallet-bridge'
 import { ConnectKitButton } from 'connectkit'
 import { useAccount } from 'wagmi'
+import { useTransactionPopup } from '@blockscout/app-sdk'
 
 export default function Header() {
-  const { isConnected } = useAccount()
+  const { isConnected, address } = useAccount()
+  const { openPopup } = useTransactionPopup()
+  
+  const showTransactionHistory = () => {
+    if (address) {
+      openPopup({
+        chainId: "11155111", // Ethereum Sepolia
+        address: address
+      })
+    }
+  }
 
   return (
     <>
@@ -32,6 +43,16 @@ export default function Header() {
               <p className="text-muted-foreground text-xs uppercase tracking-wider">Network</p>
               <p className="text-accent font-bold text-lg">Ethereum</p>
             </div>
+            
+            {isConnected && (
+              <button 
+                onClick={showTransactionHistory}
+                className="px-4 py-2 rounded-lg bg-gradient-to-r from-secondary to-accent text-secondary-foreground hover:shadow-lg hover:shadow-secondary/50 transition-all duration-300 font-bold uppercase text-xs tracking-wider glow-effect"
+              >
+                📊 Transaction History
+              </button>
+            )}
+            
             <ConnectKitButton.Custom>
               {({ isConnected, show, hide, address, ensName, chain }) => {
                 return (

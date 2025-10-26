@@ -155,12 +155,71 @@ export default function SpellLibrary() {
             onClick={() => handleSpellClick(spell)}
             className="group p-4 bg-gradient-to-br from-primary/20 to-secondary/10 border-2 border-primary/40 rounded-lg cursor-pointer hover:border-accent/60 hover:shadow-lg hover:shadow-accent/20 transition-all duration-300 hover:scale-105 transform"
           >
-            <div className="flex items-center gap-3 mb-2">
-              <span className="text-2xl group-hover:float-drift transition-all">{spell.icon}</span>
-              <span className="font-bold text-foreground text-sm uppercase tracking-wider">{spell.name}</span>
-            </div>
-            <p className="text-xs text-muted-foreground ml-9">{spell.description}</p>
-            <p className="text-xs text-accent ml-9 mt-1">Click to configure or drag to cauldron</p>
+            {spell.id === 'bridge' ? (
+              // Special rendering for bridge spell using bridge.png - image only
+              <div className="flex items-center justify-center">
+                <img 
+                  src="/bridge.png" 
+                  alt="Bridge Spell" 
+                  className="w-full h-40 object-contain rounded-lg group-hover:float-drift transition-all"
+                />
+              </div>
+            ) : spell.id === 'swap' ? (
+              // Special rendering for swap spell using swap.png - image only
+              <div className="flex items-center justify-center">
+                <img 
+                  src="/swap.png" 
+                  alt="Swap Spell" 
+                  className="w-full h-40 object-contain rounded-lg group-hover:float-drift transition-all"
+                />
+              </div>
+            ) : spell.id === 'lend' ? (
+              // Special rendering for lend spell using lend.png - image only
+              <div className="flex items-center justify-center">
+                <img 
+                  src="/lend.png" 
+                  alt="Lend Spell" 
+                  className="w-full h-40 object-contain rounded-lg group-hover:float-drift transition-all"
+                />
+              </div>
+            ) : spell.id === 'stake' ? (
+              // Special rendering for stake spell using borrow.png - image only
+              <div className="flex items-center justify-center">
+                <img 
+                  src="/borrow.png" 
+                  alt="Borrow Spell" 
+                  className="w-full h-40 object-contain rounded-lg group-hover:float-drift transition-all"
+                />
+              </div>
+            ) : spell.id === 'farm' ? (
+              // Special rendering for farm spell using yield.png - image only
+              <div className="flex items-center justify-center">
+                <img 
+                  src="/yield.png" 
+                  alt="Yield Spell" 
+                  className="w-full h-40 object-contain rounded-lg group-hover:float-drift transition-all"
+                />
+              </div>
+            ) : spell.id === 'mint' ? (
+              // Special rendering for mint spell using mint.png - image only
+              <div className="flex items-center justify-center">
+                <img 
+                  src="/mint.png" 
+                  alt="Mint Spell" 
+                  className="w-full h-40 object-contain rounded-lg group-hover:float-drift transition-all"
+                />
+              </div>
+            ) : (
+              // Default rendering for other spells
+              <>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-2xl group-hover:float-drift transition-all">{spell.icon}</span>
+                  <span className="font-bold text-foreground text-sm uppercase tracking-wider">{spell.name}</span>
+                </div>
+                <p className="text-xs text-muted-foreground ml-9">{spell.description}</p>
+                <p className="text-xs text-accent ml-9 mt-1">Click to configure or drag to cauldron</p>
+              </>
+            )}
           </div>
         ))}
       </div>

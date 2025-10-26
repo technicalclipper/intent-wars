@@ -62,7 +62,17 @@ export default function Home() {
             </div>
 
             {/* Find Match Button */}
-            <div className="pt-8">
+            <div className="pt-8 flex items-center justify-center gap-16">
+              {/* Cauldron Image */}
+              <div className="flex-shrink-0">
+                <img 
+                  src="/cauldron.png" 
+                  alt="Cauldron" 
+                  className="w-48 h-60 opacity-80 hover:opacity-100 transition-opacity duration-300"
+                />
+              </div>
+              
+              {/* Find Match Button */}
               <button
                 onClick={handleFindMatch}
                 disabled={isFindingMatch}
