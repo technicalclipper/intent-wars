@@ -30,6 +30,8 @@ interface ChainSpell {
 interface ChainBuilderProps {
   spellChain: ChainSpell[]
   setSpellChain: (chain: ChainSpell[]) => void
+  onGameComplete?: (manaUsed: number, duration: number) => void
+  isPvPMode?: boolean
 }
 
 const SPELL_MAP: Record<string, Spell> = {
@@ -95,7 +97,7 @@ const SPELL_MAP: Record<string, Spell> = {
   },
 }
 
-export default function ChainBuilder({ spellChain, setSpellChain }: ChainBuilderProps) {
+export default function ChainBuilder({ spellChain, setSpellChain, onGameComplete, isPvPMode = false }: ChainBuilderProps) {
   const [isBrewing, setIsBrewing] = useState(false)
   const [showVisualization, setShowVisualization] = useState(false)
   const [currentSpellIndex, setCurrentSpellIndex] = useState(-1)
@@ -535,6 +537,11 @@ export default function ChainBuilder({ spellChain, setSpellChain }: ChainBuilder
           totalManaUsed: finalManaUsed
         }
       })
+
+      // If in PvP mode, call onGameComplete with results
+      if (isPvPMode && onGameComplete) {
+        onGameComplete(finalManaUsed, totalTime) // Only mana and duration used in scoring
+      }
       
     } catch (error) {
       console.error('Spell execution failed:', error)

@@ -1,6 +1,5 @@
 'use client';
 
-import { CacheClearer } from '@/components/cache-clearer'
 import { WalletBridge } from './wallet-bridge'
 import { ConnectKitButton } from 'connectkit'
 import { useAccount } from 'wagmi'
@@ -10,7 +9,6 @@ export default function Header() {
 
   return (
     <>
-      <CacheClearer />
       <WalletBridge />
       <header className="border-b border-primary/40 bg-gradient-to-r from-card via-card to-card/80 backdrop-blur-xl">
         <div className="flex items-center justify-between px-8 py-5">
