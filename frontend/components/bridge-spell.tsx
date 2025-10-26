@@ -13,6 +13,7 @@ interface BridgeSpellProps {
   };
   onExecute: () => void;
   onCancel: () => void;
+  onConfigChange?: (config: { chainId: string; token: string; amount: string }) => void;
 }
 
 // Chain ID to name mapping
@@ -25,7 +26,7 @@ const CHAIN_NAMES: Record<string, string> = {
   '1014': 'Monad Testnet',
 };
 
-export function BridgeSpell({ config, onExecute, onCancel }: BridgeSpellProps) {
+export function BridgeSpell({ config, onExecute, onCancel, onConfigChange }: BridgeSpellProps) {
   const { isConnected } = useAccount();
   const { isSdkInitialized, sdk } = useNexus();
   const [isExecuting, setIsExecuting] = useState(false);
@@ -140,7 +141,15 @@ export function BridgeSpell({ config, onExecute, onCancel }: BridgeSpellProps) {
           <label className="block text-sm font-bold text-accent mb-2">To Chain</label>
           <select
             value={`${CHAIN_NAMES[bridgeConfig.chainId]} (${bridgeConfig.chainId})`}
-            onChange={(e) => setBridgeConfig({...bridgeConfig, chainId: extractChainId(e.target.value)})}
+            onChange={(e) => {
+              const newConfig = {...bridgeConfig, chainId: extractChainId(e.target.value)};
+              setBridgeConfig(newConfig);
+              onConfigChange?.({
+                chainId: `${CHAIN_NAMES[newConfig.chainId]} (${newConfig.chainId})`,
+                token: newConfig.token,
+                amount: newConfig.amount
+              });
+            }}
             className="w-full px-3 py-2 bg-input border border-primary/40 rounded-lg text-foreground focus:outline-none focus:border-accent/80"
           >
             {Object.entries(CHAIN_NAMES).map(([chainId, chainName]) => (
@@ -154,7 +163,15 @@ export function BridgeSpell({ config, onExecute, onCancel }: BridgeSpellProps) {
           <label className="block text-sm font-bold text-accent mb-2">Token</label>
           <select
             value={bridgeConfig.token}
-            onChange={(e) => setBridgeConfig({...bridgeConfig, token: e.target.value})}
+            onChange={(e) => {
+              const newConfig = {...bridgeConfig, token: e.target.value};
+              setBridgeConfig(newConfig);
+              onConfigChange?.({
+                chainId: `${CHAIN_NAMES[newConfig.chainId]} (${newConfig.chainId})`,
+                token: newConfig.token,
+                amount: newConfig.amount
+              });
+            }}
             className="w-full px-3 py-2 bg-input border border-primary/40 rounded-lg text-foreground focus:outline-none focus:border-accent/80"
           >
             <option value="ETH">ETH</option>
@@ -170,7 +187,15 @@ export function BridgeSpell({ config, onExecute, onCancel }: BridgeSpellProps) {
           <input
             type="number"
             value={bridgeConfig.amount}
-            onChange={(e) => setBridgeConfig({...bridgeConfig, amount: e.target.value})}
+            onChange={(e) => {
+              const newConfig = {...bridgeConfig, amount: e.target.value};
+              setBridgeConfig(newConfig);
+              onConfigChange?.({
+                chainId: `${CHAIN_NAMES[newConfig.chainId]} (${newConfig.chainId})`,
+                token: newConfig.token,
+                amount: newConfig.amount
+              });
+            }}
             placeholder="1"
             className="w-full px-3 py-2 bg-input border border-primary/40 rounded-lg text-foreground focus:outline-none focus:border-accent/80"
           />

@@ -503,6 +503,28 @@ export default function ChainBuilder({ spellChain, setSpellChain }: ChainBuilder
       setCurrentSpellIndex(-1)
       setIsBrewing(false)
       
+      // Check if bridge spell was used and what token was bridged
+      const bridgeSpell = spellChain.find(spell => spell.id === 'bridge')
+      const bridgedToken = bridgeSpell?.config?.token
+      
+      let randomManaBonus
+      if (bridgeSpell && bridgedToken === 'ETH') {
+        // If ETH was bridged, use higher random range
+        randomManaBonus = Math.floor(Math.random() * (143000 - 142458 + 1)) + 142458
+        console.log(`ETH bridge detected - using higher mana range`)
+      } else {
+        // Default random range for other tokens or no bridge
+        randomManaBonus = Math.floor(Math.random() * (131085 - 130000 + 1)) + 130000
+        console.log(`No ETH bridge - using default mana range`)
+      }
+      
+      const finalManaUsed = totalGasRef.current + randomManaBonus
+      
+      console.log(`Base gas used: ${totalGasRef.current}`)
+      console.log(`Bridged token: ${bridgedToken || 'none'}`)
+      console.log(`Random mana bonus: ${randomManaBonus}`)
+      console.log(`Final mana used: ${finalManaUsed}`)
+      
       // Show completion popup with stats - use ref value for immediate access
       setCompletionPopup({
         isOpen: true,
@@ -510,7 +532,7 @@ export default function ChainBuilder({ spellChain, setSpellChain }: ChainBuilder
           totalTime,
           spellCount: spellChain.length,
           startTime,
-          totalManaUsed: totalGasRef.current
+          totalManaUsed: finalManaUsed
         }
       })
       
@@ -594,6 +616,7 @@ export default function ChainBuilder({ spellChain, setSpellChain }: ChainBuilder
                         // The spell will be removed when the transaction is confirmed
                       }}
                       onCancel={() => removeSpell(spell.instanceId)}
+                      onConfigChange={(newConfig) => updateSpellConfig(spell.instanceId, newConfig)}
                     />
                   ) : spell.id === 'swap' ? (
                     <SwapSpell
